@@ -109,8 +109,15 @@ class DataBaseManager:
 
     def clear_configs(self) -> None:
         """Delete all DNS configurations from the database."""
-        self.cursor.execute("DELETE FROM dns_configs")
-        self.connection.commit()
+        try:
+            self.connection.execute("BEGIN")  # Start a transaction
+            self.cursor.execute("DELETE FROM dns_configs")
+            self.connection.commit()  # Commit the transaction
+        except sqlite3.DatabaseError as e:
+            self.connection.rollback()  # Rollback in case of error
+            raise RuntimeError(
+                "A database error occurred while clearing configurations."
+            ) from e
 
     def get_configs(self, identifier: str | None = None) -> list[tuple]:
         """Retrieve DNS configurations from the database, optionally filtered by name."""
