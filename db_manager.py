@@ -15,16 +15,27 @@ class DataBaseManager:
         description: str | None = None,
     ) -> None:
         """Add a new DNS configuration to the database."""
-        if self.config_exists(name):
-            raise ValueError(f"A configuration with the name '{name}' already exists.")
-        self.cursor.execute(
-            """
-            INSERT INTO dns_configs (name, primary_address, secondary_address, description)
-            VALUES (?, ?, ?, ?)
-        """,
-            (name, primary_address, secondary_address, description),
-        )
-        self.connection.commit()
+        try:
+            if self.config_exists(name):
+                raise ValueError(
+                    f"A configuration with the name '{name}' already exists."
+                )
+
+            self.cursor.execute(
+                """
+                INSERT INTO dns_configs (name, primary_address, secondary_address, description)
+                VALUES (?, ?, ?, ?)
+                """,
+                (name, primary_address, secondary_address, description),
+            )
+            self.connection.commit()
+
+        except sqlite3.IntegrityError as e:
+            raise RuntimeError("Database integrity error occurred.") from e
+        except sqlite3.DatabaseError as e:
+            raise RuntimeError("A database error occurred.") from e
+        except Exception as e:
+            raise RuntimeError("An unexpected error occurred.") from e
 
     def modify_config(
         self,
