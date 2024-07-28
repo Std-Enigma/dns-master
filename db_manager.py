@@ -35,17 +35,13 @@ class DataBaseManager:
         description: str | None = None,
     ) -> None:
         """Update a DNS configuration in the database by its identifier (name) or rename it."""
-        # Check if the identifier exists
         if not self.config_exists(identifier):
             raise ValueError(
                 f"No configuration found with the identifier: {identifier}"
             )
 
-        if name:
-            if self.config_exists(name):
-                raise ValueError(
-                    f"A configuration with the name '{name}' already exists."
-                )
+        if name and name != identifier and self.config_exists(name):
+            raise ValueError(f"A configuration with the name '{name}' already exists.")
 
         # Build the update query and parameters
         update_query = "UPDATE dns_configs SET "
@@ -66,15 +62,17 @@ class DataBaseManager:
         update_query += " WHERE name = ?"
         params.append(identifier)
 
-        # Execute the update query
-        self.cursor.execute(update_query, tuple(params))
-        self.connection.commit()
-
-        # Check if any row was updated
-        if self.cursor.rowcount == 0:
-            raise ValueError(
-                f"No configuration found with the identifier: {identifier}"
-            )
+        try:
+            self.connection.execute("BEGIN")  # Start a transaction
+            self.cursor.execute(update_query, tuple(params))
+            if self.cursor.rowcount == 0:
+                raise ValueError(
+                    f"No configuration found with the identifier: {identifier}"
+                )
+            self.connection.commit()  # Commit the transaction
+        except sqlite3.DatabaseError as e:
+            self.connection.rollback()  # Rollback in case of error
+            raise RuntimeError("A database error occurred during update.") from e
 
     def remove_config(self, name: str) -> None:
         """Delete a DNS configuration from the database by its name."""
