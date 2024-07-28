@@ -162,6 +162,17 @@ class DataBaseManager:
         self.connection.commit()
 
     def __del__(self) -> None:
-        """Destructor to close the database connection."""
-        if self.connection:
-            self.connection.close()
+        """Destructor to close the database connection safely."""
+        try:
+            if self.connection:
+                self.connection.close()
+        except sqlite3.DatabaseError as e:
+            # Handle any database errors that may occur during closing
+            print(
+                f"Warning: An error occurred while closing the database connection: {e}"
+            )
+        except Exception as e:
+            # Handle unexpected errors during the close operation
+            print(
+                f"Warning: An unexpected error occurred while closing the database connection: {e}"
+            )
