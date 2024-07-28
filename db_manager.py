@@ -1,4 +1,5 @@
 import sqlite3
+from typing import List, Optional, Tuple
 
 
 class DataBaseManager:
@@ -11,8 +12,8 @@ class DataBaseManager:
         self,
         name: str,
         primary_address: str,
-        secondary_address: str | None = None,
-        description: str | None = None,
+        secondary_address: Optional[str] = None,
+        description: Optional[str] = None,
     ) -> None:
         """Add a new DNS configuration to the database."""
         try:
@@ -40,10 +41,10 @@ class DataBaseManager:
     def modify_config(
         self,
         identifier: str,
-        name: str | None = None,
-        primary_address: str | None = None,
-        secondary_address: str | None = None,
-        description: str | None = None,
+        name: Optional[str] = None,
+        primary_address: Optional[str] = None,
+        secondary_address: Optional[str] = None,
+        description: Optional[str] = None,
     ) -> None:
         """Update a DNS configuration in the database by its identifier (name) or rename it."""
         if not self.config_exists(identifier):
@@ -119,7 +120,9 @@ class DataBaseManager:
                 "A database error occurred while clearing configurations."
             ) from e
 
-    def get_configs(self, identifier: str | None = None) -> list[tuple]:
+    def get_configs(
+        self, identifier: Optional[str] = None
+    ) -> List[Tuple[str, str, Optional[str], Optional[str]]]:
         """Retrieve DNS configurations from the database, optionally filtered by name."""
         try:
             query = "SELECT * FROM dns_configs"
