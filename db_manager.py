@@ -121,15 +121,26 @@ class DataBaseManager:
 
     def get_configs(self, identifier: str | None = None) -> list[tuple]:
         """Retrieve DNS configurations from the database, optionally filtered by name."""
-        query = "SELECT * FROM dns_configs"
-        params = ()
+        try:
+            query = "SELECT * FROM dns_configs"
+            params = ()
 
-        if identifier:
-            query += " WHERE name LIKE ?"
-            params = (f"%{identifier}%",)
+            if identifier:
+                query += " WHERE name LIKE ?"
+                params = (f"%{identifier}%",)
 
-        self.cursor.execute(query, params)
-        return self.cursor.fetchall()
+            self.cursor.execute(query, params)
+            results = self.cursor.fetchall()
+
+            # Validate results format
+            if not all(len(row) == 4 for row in results):
+                raise RuntimeError("Unexpected result format in database query.")
+
+            return results
+        except sqlite3.DatabaseError as e:
+            raise RuntimeError(
+                "A database error occurred while retrieving configurations."
+            ) from e
 
     def config_exists(self, name: str) -> bool:
         """Check if a configuration with the given name exists."""
