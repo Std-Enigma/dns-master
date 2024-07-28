@@ -85,10 +85,27 @@ class DataBaseManager:
             self.connection.rollback()  # Rollback in case of error
             raise RuntimeError("A database error occurred during update.") from e
 
-    def remove_config(self, name: str) -> None:
-        """Delete a DNS configuration from the database by its name."""
-        self.cursor.execute("DELETE FROM dns_configs WHERE name = ?", (name,))
-        self.connection.commit()
+    def remove_config(self, identifier: str) -> None:
+        """Delete a DNS configuration from the database by its identifier (name)."""
+        try:
+            # Check if the configuration exists before attempting to delete
+            if not self.config_exists(identifier):
+                raise ValueError(
+                    f"No configuration found with the identifier: {identifier}"
+                )
+
+            self.connection.execute("BEGIN")  # Start a transaction
+            self.cursor.execute("DELETE FROM dns_configs WHERE name = ?", (identifier,))
+
+            if self.cursor.rowcount == 0:
+                raise ValueError(
+                    f"No configuration found with the identifier: {identifier}"
+                )
+
+            self.connection.commit()  # Commit the transaction
+        except sqlite3.DatabaseError as e:
+            self.connection.rollback()  # Rollback in case of error
+            raise RuntimeError("A database error occurred during deletion.") from e
 
     def clear_configs(self) -> None:
         """Delete all DNS configurations from the database."""
