@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 from db_manager import DataBaseManager
 
@@ -56,3 +57,44 @@ class TestConfigManagement(BaseTestCase):
         self.db_manager.clear_configs()
         configs = self.db_manager.get_configs()
         self.assertEqual(configs, [])
+
+
+class TestGetConfigs(BaseTestCase):
+
+    def setUp(self):
+        super().setUp()
+        # Initialize the database with test data for get_configs testing
+        self.db_manager.add_config("test1", "192.168.1.1")
+        self.db_manager.add_config(
+            "test2", "192.168.1.2", "192.168.1.3", "Secondary DNS"
+        )
+        self.db_manager.add_config("test3", "192.168.1.4")
+
+    def test_get_all_configs(self):
+        """Test retrieving all configurations."""
+        configs = self.db_manager.get_configs()
+        expected = [
+            ("test1", "192.168.1.1", None, None),
+            ("test2", "192.168.1.2", "192.168.1.3", "Secondary DNS"),
+            ("test3", "192.168.1.4", None, None),
+        ]
+        self.assertEqual(configs, expected)
+
+    def test_get_config_by_identifier(self):
+        """Test retrieving a specific configuration by identifier."""
+        configs = self.db_manager.get_configs("test2")
+        expected = [("test2", "192.168.1.2", "192.168.1.3", "Secondary DNS")]
+        self.assertEqual(configs, expected)
+
+    def test_get_no_results(self):
+        """Test retrieving configurations with an identifier that doesn't exist."""
+        configs = self.db_manager.get_configs("nonexistent")
+        self.assertEqual(configs, [])
+
+    @patch.object(
+        DataBaseManager, "get_configs", side_effect=RuntimeError("Test DB Error")
+    )
+    def test_get_configs_database_error(self, _):
+        """Test handling of database errors during retrieval."""
+        with self.assertRaises(RuntimeError):
+            self.db_manager.get_configs("test1")
