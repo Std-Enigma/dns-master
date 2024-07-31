@@ -98,3 +98,14 @@ class TestGetConfigs(BaseTestCase):
         """Test handling of database errors during retrieval."""
         with self.assertRaises(RuntimeError):
             self.db_manager.get_configs("test1")
+
+
+class TestConfigExists(BaseTestCase):
+
+    @patch.object(
+        DataBaseManager, "config_exists", side_effect=RuntimeError("Test DB Error")
+    )
+    def test_config_exists_raises_exception(self, _):
+        """Test that config_exists method raises a RuntimeError when a database error occurs."""
+        with self.assertRaises(RuntimeError):
+            self.db_manager.config_exists("test1")
