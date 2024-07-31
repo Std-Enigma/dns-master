@@ -34,12 +34,10 @@ class DataBaseManager:
             ValueError: If a configuration with the given name already exists.
             RuntimeError: If a database error occurs.
         """
-        try:
-            if self.config_exists(name):
-                raise ValueError(
-                    f"A configuration with the name '{name}' already exists."
-                )
+        if self.config_exists(name):
+            raise ValueError(f"A configuration with the name '{name}' already exists.")
 
+        try:
             self.cursor.execute(
                 """
                 INSERT INTO dns_configs (name, primary_address, secondary_address, description)
