@@ -46,6 +46,20 @@ class TestConfigManagement(BaseTestCase):
         expected = [("test1", "192.168.1.10", None, "Updated")]
         self.assertEqual(configs, expected)
 
+    def test_modify_config_non_existent_identifier(self):
+        """Test modifying a DNS configuration with a non-existent identifier."""
+        with self.assertRaises(ValueError):
+            self.db_manager.modify_config("nonexistent", primary_address="192.168.1.20")
+
+    def test_modify_config_duplicate_name(self):
+        """Test modifying a DNS configuration with a new name that already exists."""
+        # Add a second configuration with the name "test4"
+        self.db_manager.add_config("test4", "192.168.1.5")
+
+        # Attempt to modify "test1" to have the name "test4"
+        with self.assertRaises(ValueError):
+            self.db_manager.modify_config("test1", name="test4")
+
     def test_remove_config(self):
         """Test removing an existing DNS configuration."""
         self.db_manager.remove_config("test3")
