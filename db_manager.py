@@ -4,6 +4,12 @@ from typing import List, Optional, Tuple
 
 class DataBaseManager:
     def __init__(self, db_name: str) -> None:
+        """
+        Initialize the DataBaseManager with the given database name.
+
+        Args:
+            db_name (str): The name of the SQLite database file.
+        """
         self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
         self._create_table()
@@ -15,7 +21,19 @@ class DataBaseManager:
         secondary_address: Optional[str] = None,
         description: Optional[str] = None,
     ) -> None:
-        """Add a new DNS configuration to the database."""
+        """
+        Add a new DNS configuration to the database.
+
+        Args:
+            name (str): The name (identifier) for the DNS configuration.
+            primary_address (str): The primary DNS address.
+            secondary_address (Optional[str], optional): The secondary DNS address (default is None).
+            description (Optional[str], optional): A description for the DNS configuration (default is None).
+
+        Raises:
+            ValueError: If a configuration with the given name already exists.
+            RuntimeError: If a database error occurs.
+        """
         try:
             if self.config_exists(name):
                 raise ValueError(
@@ -46,7 +64,20 @@ class DataBaseManager:
         secondary_address: Optional[str] = None,
         description: Optional[str] = None,
     ) -> None:
-        """Update a DNS configuration in the database by its identifier (name) or rename it."""
+        """
+        Update an existing DNS configuration in the database.
+
+        Args:
+            identifier (str): The current name (identifier) of the DNS configuration to update.
+            name (Optional[str], optional): New name for the DNS configuration (default is None).
+            primary_address (Optional[str], optional): New primary DNS address (default is None).
+            secondary_address (Optional[str], optional): New secondary DNS address (default is None).
+            description (Optional[str], optional): New description for the DNS configuration (default is None).
+
+        Raises:
+            ValueError: If the configuration to update does not exist or if a new name already exists.
+            RuntimeError: If a database error occurs during the update.
+        """
         if not self.config_exists(identifier):
             raise ValueError(
                 f"No configuration found with the identifier: {identifier}"
@@ -87,7 +118,16 @@ class DataBaseManager:
             raise RuntimeError("A database error occurred during update.") from e
 
     def remove_config(self, identifier: str) -> None:
-        """Delete a DNS configuration from the database by its identifier (name)."""
+        """
+        Delete a DNS configuration from the database by its name.
+
+        Args:
+            identifier (str): The name (identifier) of the DNS configuration to delete.
+
+        Raises:
+            ValueError: If no configuration is found with the given identifier.
+            RuntimeError: If a database error occurs during deletion.
+        """
         try:
             # Check if the configuration exists before attempting to delete
             if not self.config_exists(identifier):
@@ -109,7 +149,12 @@ class DataBaseManager:
             raise RuntimeError("A database error occurred during deletion.") from e
 
     def clear_configs(self) -> None:
-        """Delete all DNS configurations from the database."""
+        """
+        Delete all DNS configurations from the database.
+
+        Raises:
+            RuntimeError: If a database error occurs while clearing configurations.
+        """
         try:
             self.connection.execute("BEGIN")  # Start a transaction
             self.cursor.execute("DELETE FROM dns_configs")
@@ -123,7 +168,18 @@ class DataBaseManager:
     def get_configs(
         self, identifier: Optional[str] = None
     ) -> List[Tuple[str, str, Optional[str], Optional[str]]]:
-        """Retrieve DNS configurations from the database, optionally filtered by name."""
+        """
+        Retrieve DNS configurations from the database, optionally filtered by name.
+
+        Args:
+            identifier (Optional[str], optional): The name (identifier) to filter configurations by (default is None).
+
+        Returns:
+            List[Tuple[str, str, Optional[str], Optional[str]]]: A list of tuples representing DNS configurations.
+
+        Raises:
+            RuntimeError: If a database error occurs while retrieving configurations.
+        """
         try:
             query = "SELECT * FROM dns_configs"
             params = ()
@@ -146,7 +202,15 @@ class DataBaseManager:
             ) from e
 
     def config_exists(self, name: str) -> bool:
-        """Check if a configuration with the given name exists."""
+        """
+        Check if a DNS configuration with the given name exists.
+
+        Args:
+            name (str): The name (identifier) of the DNS configuration to check.
+
+        Returns:
+            bool: True if a configuration with the given name exists, False otherwise.
+        """
         self.cursor.execute("SELECT 1 FROM dns_configs WHERE name = ?", (name,))
         return self.cursor.fetchone() is not None
 
