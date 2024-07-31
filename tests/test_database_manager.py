@@ -66,6 +66,11 @@ class TestConfigManagement(BaseTestCase):
         configs = self.db_manager.get_configs("test3")
         self.assertEqual(configs, [])
 
+    def test_remove_non_existent_config(self):
+        """Test removing a DNS configuration that does not exist."""
+        with self.assertRaises(ValueError):
+            self.db_manager.remove_config("nonexistent")
+
     def test_clear_configs(self):
         """Test clearing all DNS configurations."""
         self.db_manager.clear_configs()
