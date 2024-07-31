@@ -210,9 +210,17 @@ class DataBaseManager:
 
         Returns:
             bool: True if a configuration with the given name exists, False otherwise.
+
+        Raises:
+            RuntimeError: If a database error occurs during the check.
         """
-        self.cursor.execute("SELECT 1 FROM dns_configs WHERE name = ?", (name,))
-        return self.cursor.fetchone() is not None
+        try:
+            self.cursor.execute("SELECT 1 FROM dns_configs WHERE name = ?", (name,))
+            return self.cursor.fetchone() is not None
+        except sqlite3.DatabaseError as e:
+            raise RuntimeError(
+                "A database error occurred while checking configuration existence."
+            ) from e
 
     def _create_table(self) -> None:
         """Create the DNS configurations table if it doesn't exist."""
