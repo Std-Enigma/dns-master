@@ -109,3 +109,7 @@ class TestConfigExists(BaseTestCase):
         """Test that config_exists method raises a RuntimeError when a database error occurs."""
         with self.assertRaises(RuntimeError):
             self.db_manager.config_exists("test1")
+
+
+if __name__ == "__main__":
+    unittest.main()
