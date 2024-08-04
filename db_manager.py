@@ -164,7 +164,7 @@ class DataBaseManager:
             ) from e
 
     def get_configs(
-        self, identifier: Optional[str] = None
+        self, filter: Optional[str] = None
     ) -> List[Tuple[str, str, Optional[str], Optional[str]]]:
         """
         Retrieve DNS configurations from the database, optionally filtered by name.
@@ -182,9 +182,9 @@ class DataBaseManager:
             query = "SELECT * FROM dns_configs"
             params = ()
 
-            if identifier:
+            if filter:
                 query += " WHERE name LIKE ?"
-                params = (f"%{identifier}%",)
+                params = (f"%{filter}%",)
 
             self.cursor.execute(query, params)
             results = self.cursor.fetchall()
