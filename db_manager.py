@@ -170,7 +170,7 @@ class DataBaseManager:
         Retrieve DNS configurations from the database, optionally filtered by name.
 
         Args:
-            identifier (Optional[str], optional): The name (identifier) to filter configurations by (default is None).
+            filter (Optional[str], optional): The name (identifier) to filter configurations by (default is None).
 
         Returns:
             List[Tuple[str, str, Optional[str], Optional[str]]]: A list of tuples representing DNS configurations.
