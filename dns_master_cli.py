@@ -18,6 +18,15 @@ app = typer.Typer(
 
 
 def print_fail_message(message: str) -> None:
+    """
+    Prints a failure message to the console in bold, italicized red text.
+
+    Args:
+        message (str): The message to display.
+
+    Returns:
+        None
+    """
     console.print(
         f":x: {message}.",
         style="bold italic red",
@@ -26,12 +35,31 @@ def print_fail_message(message: str) -> None:
 
 
 def log_error(e: Exception) -> None:
+    """
+    Logs an exception to the console with red text and highlights.
+
+    Args:
+        e (Exception): The exception to log.
+
+    Returns:
+        None
+    """
     console.log(
         e, emoji=True, highlight=True, style="bold italic red", justify="center"
     )
 
 
 def log_failed_operation(message: str, e: Exception) -> None:
+    """
+    Prints a failure message and logs an exception with details about the failed operation.
+
+    Args:
+        message (str): The failure message.
+        e (Exception): The exception that occurred.
+
+    Returns:
+        None
+    """
     print_fail_message(f"{message} Please check the error message below for details")
     log_error(e)
 
@@ -61,6 +89,19 @@ def add_config(
         ),
     ] = False,
 ) -> None:
+    """
+    Adds a new DNS configuration with the given identifier, primary address, and optional secondary address and description.
+
+    Args:
+        identifier (str): Unique identifier for the DNS configuration.
+        primary_address (str): Primary DNS address.
+        secondary_address (Optional[str]): Secondary DNS address (optional).
+        description (Optional[str]): Description of the DNS configuration (optional).
+        list_after (bool): If True, lists configurations after the operation (optional).
+
+    Returns:
+        None
+    """
     try:
         db_manager.add_config(
             identifier, primary_address, secondary_address, description
@@ -100,6 +141,17 @@ def remove_config(
         ),
     ] = False,
 ) -> None:
+    """
+    Removes a DNS configuration based on its identifier. Requires confirmation if `force` is set to True.
+
+    Args:
+        identifier (str): Unique identifier of the DNS configuration to be removed.
+        force (bool): If True, removes configuration without additional confirmation.
+        list_after (bool): If True, lists configurations after the operation (optional).
+
+    Returns:
+        None
+    """
     if not force:
         print_fail_message("Operation cancelled. No configurations were deleted.")
         return
@@ -157,6 +209,21 @@ def modify_config(
         ),
     ] = False,
 ) -> None:
+    """
+    Modifies an existing DNS configuration. You can update the identifier, primary address, secondary address, and description. Requires confirmation if `force` is set to True.
+
+    Args:
+        identifier (str): Unique identifier of the DNS configuration to be modified.
+        new_identifier (Optional[str]): New identifier (optional).
+        new_primary_address (Optional[str]): New primary address (optional).
+        new_secondary_address (Optional[str]): New secondary address (optional).
+        new_description (Optional[str]): New description (optional).
+        force (bool): If True, modifies configuration without additional confirmation.
+        list_after (bool): If True, lists configurations after the modification (optional).
+
+    Returns:
+        None
+    """
     if not force:
         print_fail_message("Operation cancelled. No configurations were modified")
         return
@@ -191,6 +258,15 @@ def list_configs(
         typer.Argument(),
     ] = None
 ) -> None:
+    """
+    Lists all DNS configurations or filters configurations based on the provided identifier.
+
+    Args:
+        filter (Optional[str]): Filter to display configurations based on their identifier (optional).
+
+    Returns:
+        None
+    """
     configs_table = Table(
         title=(
             f":telescope: DNS Configurations"
@@ -261,6 +337,16 @@ def clear_configs(
         ),
     ] = False,
 ) -> None:
+    """
+    Clears all DNS configurations. Requires confirmation if `force` is set to True.
+
+    Args:
+        force (bool): If True, clears all configurations without additional confirmation.
+        list_after (bool): If True, lists configurations after clearing (optional).
+
+    Returns:
+        None
+    """
     if not force:
         print_fail_message("Operation cancelled. No configurations were deleted.")
         return
