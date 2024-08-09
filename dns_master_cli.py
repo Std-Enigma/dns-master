@@ -76,5 +76,46 @@ def add_config(
             style="bold italic green",
             justify="center",
         )
+
+
+@app.command(
+    name="remove",
+)
+def remove_config(
+    identifier: Annotated[
+        str,
+        typer.Argument(),
+    ],
+    force: Annotated[
+        bool,
+        typer.Option(
+            prompt="Are you sure you want to delete this configuration?",
+        ),
+    ] = False,
+    list_after: Annotated[
+        bool,
+        typer.Option(
+            "--list",
+            "-l",
+        ),
+    ] = False,
+) -> None:
+    if not force:
+        print_fail_message("Operation cancelled. No configurations were deleted.")
+        return
+
+    try:
+        db_manager.remove_config(identifier)
+    except Exception as e:
+        log_failed_operation("Failed to remove the configuration", e)
+    else:
+        if list_after:
+            list_configs()
+
+        console.print(
+            f":heavy_minus_sign: Configuration '{identifier}' has been successfully removed.",
+            style="bold italic green",
+            justify="center",
+        )
 if __name__ == "__main__":
     app()
