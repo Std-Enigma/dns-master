@@ -142,7 +142,7 @@ def add_config(
         log_failed_operation("Failed to add the configuration", e)
     else:
         if list_after:
-            list_configs(identifier)
+            list_configs()
 
         console.print(
             f":heavy_plus_sign: Configuration '{identifier}' has been successfully added.",
