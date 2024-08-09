@@ -12,6 +12,27 @@ db_manager = DataBaseManager(config.USER_DATA_DIRECTORY)
 app = typer.Typer(
     name="dns-master",
     rich_markup_mode="rich",
+    help=(
+        ":toolbox: [underline]DNS Master[/underline] - Your CLI solution for efficient DNS management.\n\n"
+        "Easily manage and configure your DNS settings from the command line with [bold]DNS Master[/bold]. This tool offers a streamlined interface for handling DNS configurations, allowing you to add, modify, remove, list, and clear settings with simple commands.\n\n"
+        "[bold]How It Works:[/bold]\n"
+        "[bold]DNS Master[/bold] uses a file-based database to store DNS configurations, ensuring that your settings are saved persistently. You can perform the following operations:\n"
+        "- [green]Add[/green]: Create new DNS configurations with unique identifiers.\n"
+        "- [red]Remove[/red]: Delete specific DNS configurations.\n"
+        "- [yellow]Modify[/yellow]: Update details of existing configurations.\n"
+        "- [cyan]List[/cyan]: View all configurations or filter based on identifiers.\n"
+        "- [yellow1]Clear[/yellow1]: Remove all stored DNS configurations.\n\n"
+        "[bold]Use Cases:[/bold]\n"
+        "Perfect for network administrators, developers, and anyone needing to manage DNS settings efficiently from the command line.\n\n"
+        "For more detailed information on each command, use `[bold]dns-master [command] --help[/bold]`.\n\n"
+        "[bold]Open Source:[/bold] This tool is open source and licensed under the [bold]GPL[/bold] license. You can visit its repository at [underline]https://github.com/Std-Enigma/dns-master[/underline].\n\n"
+        "[bold]Usage Examples:[/bold]\n"
+        "1. [green]Add[/green] a DNS configuration:\n   `[bold]dns-master [green]add[/green] google 8.8.8.8 8.8.4.4[/bold]`\n"
+        "2. [cyan]List[/cyan] all configurations:\n   `[bold]dns-master [cyan]list[/cyan][/bold]`\n"
+        "3. [red]Remove[/red] a DNS configuration [underline]without[/underline] confirmation:\n   `[bold]dns-master [red]remove[/red] --force google[/bold]`\n\n"
+        "[bold]Contributing and Support:[/bold]\n"
+        "If you would like to contribute or need support, please visit our repository and check the [underline]CONTRIBUTING[/underline] and [underline]ISSUES[/underline] sections.\n\n"
+    ),
     no_args_is_help=True,
     chain=True,
 )
@@ -66,6 +87,17 @@ def log_failed_operation(message: str, e: Exception) -> None:
 
 @app.command(
     name="add",
+    help="[green]:heavy_plus_sign: [bold]Add[/bold] a new DNS configuration.[/green]\n\n"
+    "Use this command to add a new DNS configuration to the system. This command requires a unique identifier and the primary DNS address. "
+    "You can also specify an optional secondary DNS address and a description for the configuration.\n\n"
+    "Notes:\n"
+    "- The `identifier` must be unique. If a configuration with the same identifier already exists, the command will produce an error.\n"
+    "- The `description` helps you remember the purpose of the configuration.\n\n"
+    "Additional Information:\n"
+    "- `--list`, `-l`: If specified, lists configurations based on the given identifier after the addition.\n\n"
+    "Examples:\n"
+    '  dns-master add my_dns 8.8.8.8 8.8.4.4 "Google\'s DNS" --list\n'
+    "  dns-master add example_dns 1.1.1.1\n",
 )
 def add_config(
     identifier: Annotated[
@@ -121,6 +153,16 @@ def add_config(
 
 @app.command(
     name="remove",
+    help="[red]:heavy_minus_sign: [bold]Remove[/bold] a DNS configuration by its identifier.[/red]\n\n"
+    "This command removes a DNS configuration from the system using its unique identifier. "
+    "Notes:\n"
+    "- Ensure that the identifier you specify is correct to avoid accidental deletions.\n\n"
+    "Additional Information:\n"
+    "- `--force`: If specified, skips the confirmation prompt and directly removes the configuration.\n"
+    "- `--list`, `-l`: If specified, lists configurations after the removal.\n\n"
+    "Examples:\n"
+    "  dns-master remove my_dns --force\n"
+    "  dns-master remove example_dns --list\n",
 )
 def remove_config(
     identifier: Annotated[
@@ -173,6 +215,16 @@ def remove_config(
 
 @app.command(
     name="modify",
+    help="[yellow]:gear: [bold]Modify[/bold] an existing DNS configuration.[/yellow]\n\n"
+    "This command allows you to update an existing DNS configuration. You can change the identifier, primary address, secondary address, and description.\n\n"
+    "Notes:\n"
+    "- The `identifier` must already exist in the system to be modified.\n"
+    "- Ensure you provide at least one new value to update. If no new values are provided, no changes will be made.\n\n"
+    "Additional Information:\n"
+    "- `--force`: If specified, skips additional confirmation for the modification.\n"
+    "- `--list`, `-l`: If specified, lists configurations after modification.\n\n"
+    "Examples:\n"
+    "  dns-master modify --force old_dns new_dns 1.1.1.1\n",
 )
 def modify_config(
     identifier: Annotated[
@@ -251,6 +303,16 @@ def modify_config(
 
 @app.command(
     name="list",
+    help="[cyan]:telescope: [bold]List[/bold] all saved DNS configurations.[/cyan]\n\n"
+    "This command lists all DNS configurations stored in the system. You can filter the results by providing an identifier. "
+    "If no filter is provided, all configurations will be listed.\n\n"
+    "Notes:\n"
+    "- Filtering by identifier can help you find specific configurations quickly.\n"
+    "- If the filter does not match any identifiers, no results will be shown.\n\n"
+    "Examples:\n"
+    "  dns-master list\n"
+    "  dns-master list my_dns\n"
+    "  dns-master list example_dns\n",
 )
 def list_configs(
     filter: Annotated[
@@ -321,6 +383,17 @@ def list_configs(
 
 @app.command(
     name="clear",
+    help="[yellow1]:wastebasket: [bold]Clear[/bold] all saved DNS configurations.[/yellow1]\n\n"
+    "This command clears all DNS configurations from the system."
+    "Notes:\n"
+    "- Use the `--force` option with caution, as it will permanently delete all configurations without any further confirmation.\n"
+    "- After clearing, the list command can be used to verify that all configurations have been removed.\n\n"
+    "Additional Information:\n"
+    "- `--force`: If specified, skips the confirmation prompt and clears all configurations.\n"
+    "- `--list`, `-l`: If specified, lists configurations after clearing.\n\n"
+    "Examples:\n"
+    "  dns-master clear --force\n"
+    "  dns-master clear --list\n",
 )
 def clear_configs(
     force: Annotated[
