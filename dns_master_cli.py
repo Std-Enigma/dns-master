@@ -180,5 +180,66 @@ def modify_config(
             style="bold green",
             justify="center",
         )
+
+
+@app.command(
+    name="list",
+)
+def list_configs(
+    filter: Annotated[
+        Optional[str],
+        typer.Argument(),
+    ] = None
+) -> None:
+    configs_table = Table(
+        title=(
+            f":telescope: DNS Configurations"
+            + f" - Results for '[bold]{filter}[/bold]' :mag_right:"
+            if filter
+            else None
+        ),
+        border_style="cyan",
+        header_style="bold italic",
+    )
+
+    configs_table.add_column("Identifier", header_style="green", justify="left")
+    configs_table.add_column(
+        "Primary Address",
+        header_style="blue",
+        justify="center",
+    )
+    configs_table.add_column(
+        "Secondary Address",
+        header_style="red",
+        justify="center",
+    )
+    configs_table.add_column(
+        "Description",
+        header_style="yellow",
+        justify="center",
+    )
+
+    try:
+        configs = db_manager.get_configs(filter)
+    except Exception as e:
+        log_failed_operation("Failed to retrieve the DNS configurations", e)
+        return
+
+    for config in configs:
+        identifier, primary_address, secondary_address, description = (
+            config[0],
+            config[1],
+            config[2] or "",
+            config[3] or "No Description",
+        )
+        configs_table.add_row(
+            identifier,
+            primary_address,
+            secondary_address,
+            description,
+        )
+        configs_table.add_section()
+
+    console.print(configs_table, justify="center")
 if __name__ == "__main__":
     app()
