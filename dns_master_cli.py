@@ -25,7 +25,7 @@ app = typer.Typer(
         "[bold]Use Cases:[/bold]\n"
         "Perfect for network administrators, developers, and anyone needing to manage DNS settings efficiently from the command line.\n\n"
         "For more detailed information on each command, use `[bold]dns-master [command] --help[/bold]`.\n\n"
-        "[bold]Open Source:[/bold] This tool is open source and licensed under the [bold]GPL[/bold] license. You can visit its repository at [underline]https://github.com/Std-Enigma/dns-master[/underline].\n\n"
+        "[bold]Open Source:[/bold] This tool is open source and licensed under the [bold]GPL[/bold] license. You can visit its repository at [link]https://github.com/Std-Enigma/dns-master[/link].\n\n"
         "[bold]Usage Examples:[/bold]\n"
         "1. [green]Add[/green] a DNS configuration:\n   `[bold]dns-master [green]add[/green] google 8.8.8.8 8.8.4.4[/bold]`\n"
         "2. [cyan]List[/cyan] all configurations:\n   `[bold]dns-master [cyan]list[/cyan][/bold]`\n"
