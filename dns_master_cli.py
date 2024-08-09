@@ -117,5 +117,68 @@ def remove_config(
             style="bold italic green",
             justify="center",
         )
+
+
+@app.command(
+    name="modify",
+)
+def modify_config(
+    identifier: Annotated[
+        str,
+        typer.Argument(),
+    ],
+    new_identifier: Annotated[
+        Optional[str],
+        typer.Argument(),
+    ] = None,
+    new_primary_address: Annotated[
+        Optional[str],
+        typer.Argument(),
+    ] = None,
+    new_secondary_address: Annotated[
+        Optional[str],
+        typer.Argument(),
+    ] = None,
+    new_description: Annotated[
+        Optional[str],
+        typer.Argument(),
+    ] = None,
+    force: Annotated[
+        bool,
+        typer.Option(
+            prompt="Are you sure you want to modify the configuration?",
+        ),
+    ] = False,
+    list_after: Annotated[
+        bool,
+        typer.Option(
+            "--list",
+            "-l",
+        ),
+    ] = False,
+) -> None:
+    if not force:
+        print_fail_message("Operation cancelled. No configurations were modified")
+        return
+
+    try:
+        db_manager.modify_config(
+            identifier,
+            new_identifier,
+            new_primary_address,
+            new_secondary_address,
+            new_description,
+        )
+    except Exception as e:
+        log_failed_operation("Failed to modify DNS configuration", e)
+    else:
+        if list_after:
+            list_configs()
+
+        console.print(
+            f":gear: Configuration '{identifier}' has been successfully modified",
+            style="bold green",
+            justify="center",
+        )
 if __name__ == "__main__":
     app()
