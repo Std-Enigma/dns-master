@@ -96,7 +96,7 @@ def log_failed_operation(message: str, e: Exception) -> None:
     "Additional Information:\n"
     "- `--list`, `-l`: If specified, lists configurations based on the given identifier after the addition.\n\n"
     "Examples:\n"
-    '  dns-master add my_dns 8.8.8.8 8.8.4.4 "Google\'s DNS" --list\n'
+    '  dns-master add --list my_dns 8.8.8.8 8.8.4.4 "Google\'s DNS"\n'
     "  dns-master add example_dns 1.1.1.1\n",
 )
 def add_config(
@@ -164,8 +164,8 @@ def add_config(
     "- `--force`: If specified, skips the confirmation prompt and directly removes the configuration.\n"
     "- `--list`, `-l`: If specified, lists configurations after the removal.\n\n"
     "Examples:\n"
-    "  dns-master remove my_dns --force\n"
-    "  dns-master remove example_dns --list\n",
+    "  dns-master remove --force my_dns\n"
+    "  dns-master remove --list example_dns\n",
 )
 def remove_config(
     identifier: Annotated[
