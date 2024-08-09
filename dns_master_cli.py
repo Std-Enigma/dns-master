@@ -172,6 +172,8 @@ def remove_config(
     force: Annotated[
         bool,
         typer.Option(
+            "--force",
+            "-f",
             prompt="Are you sure you want to delete this configuration?",
         ),
     ] = False,
@@ -250,6 +252,8 @@ def modify_config(
     force: Annotated[
         bool,
         typer.Option(
+            "--force",
+            "-f",
             prompt="Are you sure you want to modify the configuration?",
         ),
     ] = False,
@@ -399,6 +403,8 @@ def clear_configs(
     force: Annotated[
         bool,
         typer.Option(
+            "--force",
+            "-f",
             prompt="Are you sure you want to delete All configurations?",
         ),
     ] = False,
