@@ -102,22 +102,25 @@ def log_failed_operation(message: str, e: Exception) -> None:
 def add_config(
     identifier: Annotated[
         str,
-        typer.Argument(),
+        typer.Argument(
+            help="A unique identifier for the DNS configuration. This name will be used to reference the configuration later."
+        ),
     ],
     primary_address: Annotated[str, typer.Argument()],
     secondary_address: Annotated[
         Optional[str],
-        typer.Argument(),
+        typer.Argument(help="The primary DNS address for the configuration."),
     ] = None,
     description: Annotated[
         Optional[str],
-        typer.Argument(),
+        typer.Argument(help="The secondary DNS address for the configuration."),
     ] = None,
     list_after: Annotated[
         bool,
         typer.Option(
             "--list",
             "-l",
+            help="List configurations after the operation.",
         ),
     ] = False,
 ) -> None:
@@ -167,7 +170,9 @@ def add_config(
 def remove_config(
     identifier: Annotated[
         str,
-        typer.Argument(),
+        typer.Argument(
+            help="The unique identifier of the DNS configuration to be removed."
+        ),
     ],
     force: Annotated[
         bool,
@@ -175,6 +180,7 @@ def remove_config(
             "--force",
             "-f",
             prompt="Are you sure you want to delete this configuration?",
+            help="Force deletion without confirmation.",
         ),
     ] = False,
     list_after: Annotated[
@@ -182,6 +188,7 @@ def remove_config(
         typer.Option(
             "--list",
             "-l",
+            help="List configurations after the operation.",
         ),
     ] = False,
 ) -> None:
@@ -231,23 +238,33 @@ def remove_config(
 def modify_config(
     identifier: Annotated[
         str,
-        typer.Argument(),
+        typer.Argument(
+            help="The unique identifier of the DNS configuration to be modified. This name is used to find and update the existing configuration."
+        ),
     ],
     new_identifier: Annotated[
         Optional[str],
-        typer.Argument(),
+        typer.Argument(
+            help="The new identifier for the DNS configuration. If not provided, the existing identifier remains unchanged."
+        ),
     ] = None,
     new_primary_address: Annotated[
         Optional[str],
-        typer.Argument(),
+        typer.Argument(
+            help="The new primary DNS address. If not provided, the existing address remains unchanged."
+        ),
     ] = None,
     new_secondary_address: Annotated[
         Optional[str],
-        typer.Argument(),
+        typer.Argument(
+            help="The new secondary DNS address. If not provided, the existing address remains unchanged."
+        ),
     ] = None,
     new_description: Annotated[
         Optional[str],
-        typer.Argument(),
+        typer.Argument(
+            help="The new description for the DNS configuration. If not provided, the existing description remains unchanged."
+        ),
     ] = None,
     force: Annotated[
         bool,
@@ -255,6 +272,7 @@ def modify_config(
             "--force",
             "-f",
             prompt="Are you sure you want to modify the configuration?",
+            help="If set to `True`, the modification will proceed without additional confirmation.",
         ),
     ] = False,
     list_after: Annotated[
@@ -262,6 +280,7 @@ def modify_config(
         typer.Option(
             "--list",
             "-l",
+            help="List configurations after the modification.",
         ),
     ] = False,
 ) -> None:
@@ -321,7 +340,9 @@ def modify_config(
 def list_configs(
     filter: Annotated[
         Optional[str],
-        typer.Argument(),
+        typer.Argument(
+            help="A string used to filter the displayed configurations based on their identifier. If not provided, all configurations will be listed.",
+        ),
     ] = None
 ) -> None:
     """
@@ -406,6 +427,7 @@ def clear_configs(
             "--force",
             "-f",
             prompt="Are you sure you want to delete All configurations?",
+            help="Force deletion without confirmation.",
         ),
     ] = False,
     list_after: Annotated[
@@ -413,6 +435,7 @@ def clear_configs(
         typer.Option(
             "--list",
             "-l",
+            help="List configurations after the operation.",
         ),
     ] = False,
 ) -> None:
