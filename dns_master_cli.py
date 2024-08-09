@@ -241,5 +241,44 @@ def list_configs(
         configs_table.add_section()
 
     console.print(configs_table, justify="center")
+
+
+@app.command(
+    name="clear",
+)
+def clear_configs(
+    force: Annotated[
+        bool,
+        typer.Option(
+            prompt="Are you sure you want to delete All configurations?",
+        ),
+    ] = False,
+    list_after: Annotated[
+        bool,
+        typer.Option(
+            "--list",
+            "-l",
+        ),
+    ] = False,
+) -> None:
+    if not force:
+        print_fail_message("Operation cancelled. No configurations were deleted.")
+        return
+
+    try:
+        db_manager.clear_configs()
+    except Exception as e:
+        log_failed_operation("Failed to clear DNS configurations", e)
+    else:
+        if list_after:
+            list_configs()
+
+        console.print(
+            ":wastebasket: All DNS configurations have been successfully deleted.",
+            style="bold italic green",
+            justify="center",
+        )
+
+
 if __name__ == "__main__":
     app()
