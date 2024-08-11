@@ -3,14 +3,14 @@ from typing import List, Optional, Tuple
 
 
 class DataBaseManager:
-    def __init__(self, db_name: str) -> None:
+    def __init__(self, db_path: str) -> None:
         """
         Initialize the DataBaseManager with the given database name.
 
         Args:
-            db_name (str): The name of the SQLite database file.
+            db_path (str): The name of the SQLite database file.
         """
-        self.connection = sqlite3.connect(db_name)
+        self.connection = sqlite3.connect(db_path)
         self.cursor = self.connection.cursor()
         self._create_table()
 
