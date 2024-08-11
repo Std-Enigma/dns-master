@@ -357,9 +357,7 @@ def list_configs(
     configs_table = Table(
         title=(
             f":telescope: DNS Configurations"
-            + f" - Results for '[bold]{filter}[/bold]' :mag_right:"
-            if filter
-            else None
+            + (f" - Results for '[bold]{filter}[/bold]' :mag_right:" if filter else "")
         ),
         border_style="cyan",
         header_style="bold italic",
