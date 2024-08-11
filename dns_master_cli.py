@@ -8,7 +8,7 @@ import config
 from db_manager import DataBaseManager
 
 console = Console()
-db_manager = DataBaseManager(config.USER_DATA_DIRECTORY)
+db_manager = DataBaseManager(config.DATABASE_PATH)
 app = typer.Typer(
     name="dns-master",
     rich_markup_mode="rich",
