@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from typing import List, Optional, Tuple
 
@@ -10,6 +11,10 @@ class DataBaseManager:
         Args:
             db_path (str): The name of the SQLite database file.
         """
+        parent_dir = os.path.dirname(db_path)
+        if parent_dir and not os.path.exists(parent_dir):
+            os.makedirs(parent_dir)
+
         self.connection = sqlite3.connect(db_path)
         self.cursor = self.connection.cursor()
         self._create_table()
