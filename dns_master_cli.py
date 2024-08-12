@@ -319,7 +319,7 @@ def modify_config(
 
         console.print(
             f":gear: Configuration '{identifier}' has been successfully modified",
-            style="bold green",
+            style="bold italic green",
             justify="center",
         )
 
