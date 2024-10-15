@@ -1,11 +1,10 @@
 from typing import Annotated, Optional
 
+import config
 import typer
+from db_manager import DataBaseManager
 from rich.console import Console
 from rich.table import Table
-
-import config
-from db_manager import DataBaseManager
 
 console = Console()
 db_manager = DataBaseManager(config.DATABASE_PATH)
@@ -179,7 +178,6 @@ def remove_config(
         typer.Option(
             "--force",
             "-f",
-            prompt="Are you sure you want to delete this configuration?",
             help="Force deletion without confirmation.",
         ),
     ] = False,
@@ -203,23 +201,27 @@ def remove_config(
     Returns:
         None
     """
-    if not force:
-        print_fail_message("Operation cancelled. No configurations were deleted.")
+    if not db_manager.config_exists(identifier):
+        e = ValueError(f"No configuration found with the identifier: {identifier}")
+        log_failed_operation("Operation cancelled. No configurations were deleted.", e)
         return
 
-    try:
-        db_manager.remove_config(identifier)
-    except Exception as e:
-        log_failed_operation("Failed to remove the configuration", e)
-    else:
-        if list_after:
-            list_configs()
+    if force or typer.confirm(f"Are you sure you want delete {force}?"):
+        try:
+            db_manager.remove_config(identifier)
+        except Exception as e:
+            log_failed_operation("Failed to remove the configuration", e)
+        else:
+            if list_after:
+                list_configs()
 
-        console.print(
-            f":heavy_minus_sign: Configuration '{identifier}' has been successfully removed.",
-            style="bold italic green",
-            justify="center",
-        )
+            console.print(
+                f":heavy_minus_sign: Configuration '{identifier}' has been successfully removed.",
+                style="bold italic green",
+                justify="center",
+            )
+    else:
+        print_fail_message("Operation cancelled. No configurations were deleted.")
 
 
 @app.command(
