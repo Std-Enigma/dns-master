@@ -95,13 +95,13 @@ class DataBaseManager:
         if name:
             update_query += "name = ?, "
             params.append(name)
-        if primary_address is not None:
+        if primary_address:
             update_query += "primary_address = ?, "
             params.append(primary_address)
-        if secondary_address is not None:
+        if secondary_address:
             update_query += "secondary_address = ?, "
             params.append(secondary_address)
-        if description is not None:
+        if description:
             update_query += "description = ?, "
             params.append(description)
         update_query = update_query.rstrip(", ")  # Remove trailing comma
