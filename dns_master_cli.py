@@ -1,7 +1,9 @@
 from typing import Annotated, Optional
 
+import pyperclip
 import typer
 from rich.console import Console
+from rich.prompt import Prompt
 from rich.table import Table
 
 import config
@@ -408,6 +410,65 @@ def list_configs(
         configs_table.add_section()
 
     console.print(configs_table, justify="center")
+
+
+@app.command(
+    name="copy",
+    help="[bright_white]:clipboard: [bold]Copy[/bold] an address to the clipboard.[/bright_white]\n\n"
+    "This command copies a specified address (primary, secondary, or both) to your clipboard based on the provided option.\n\n"
+    "Examples:\n"
+    "  dns-master copy my_dns\n"
+    "  dns-master copy example_dns\n",
+)
+def copy_config(
+    identifier: Annotated[
+        str,
+        typer.Argument(
+            help="The unique identifier of the DNS configuration to be copied."
+        ),
+    ],
+    prompt: Annotated[
+        bool,
+        typer.Option(
+            help="Whether to prompt for which address to copy (default: both)."
+        ),
+    ] = True,
+) -> None:
+    if not db_manager.config_exists(identifier):
+        e = ValueError(f"No configuration found with the identifier: {identifier}")
+        log_failed_operation("Operation cancelled. No configuration was copied.", e)
+        return
+
+    results = db_manager.get_configs(identifier)
+    config = results[0]
+    primary_address, secondary_address = config[1], config[2]
+
+    copy_option = (
+        Prompt.ask(
+            "What address do you want to copy [magenta][P][/magenta]rimary, [magenta][S][/magenta]econdary, [cyan][B][/cyan]oth",
+            choices=["primary", "secondary", "both", "p", "s", "b"],
+            default="both",
+            show_choices=False,
+            show_default=False,
+            case_sensitive=False,
+        )
+        if prompt
+        else "both"
+    )
+
+    match copy_option:
+        case "p" | "primary":
+            pyperclip.copy(primary_address)
+        case "s" | "secondary":
+            pyperclip.copy(secondary_address)
+        case "b" | "both":
+            pyperclip.copy(f"{primary_address}, {secondary_address}")
+
+    console.print(
+        f":clipboard: Configuration '{identifier}' has been successfully copied to your clipboard.",
+        style="bold italic green",
+        justify="center",
+    )
 
 
 @app.command(
