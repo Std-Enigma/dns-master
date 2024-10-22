@@ -24,7 +24,7 @@ To install and set up DNS Master:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/dns-master.git
+   git clone https://github.com/Std-Enigma/dns-master.git
    cd dns-master
    ```
 
