@@ -1,16 +1,21 @@
+import os
 import sqlite3
 from typing import List, Optional, Tuple
 
 
 class DataBaseManager:
-    def __init__(self, db_name: str) -> None:
+    def __init__(self, db_path: str) -> None:
         """
         Initialize the DataBaseManager with the given database name.
 
         Args:
-            db_name (str): The name of the SQLite database file.
+            db_path (str): The name of the SQLite database file.
         """
-        self.connection = sqlite3.connect(db_name)
+        parent_dir = os.path.dirname(db_path)
+        if parent_dir and not os.path.exists(parent_dir):
+            os.makedirs(parent_dir)
+
+        self.connection = sqlite3.connect(db_path)
         self.cursor = self.connection.cursor()
         self._create_table()
 
@@ -90,13 +95,13 @@ class DataBaseManager:
         if name:
             update_query += "name = ?, "
             params.append(name)
-        if primary_address is not None:
+        if primary_address:
             update_query += "primary_address = ?, "
             params.append(primary_address)
-        if secondary_address is not None:
+        if secondary_address:
             update_query += "secondary_address = ?, "
             params.append(secondary_address)
-        if description is not None:
+        if description:
             update_query += "description = ?, "
             params.append(description)
         update_query = update_query.rstrip(", ")  # Remove trailing comma
